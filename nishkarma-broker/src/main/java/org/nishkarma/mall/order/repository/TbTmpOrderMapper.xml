@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="org.nishkarma.mall.order.repository.TbTmpOrderMapper" >
+
+  <resultMap id="BaseResultMap" type="org.nishkarma.mall.order.model.TbTmpOrder" >
+    <id column="ORD_ID" property="ordId" jdbcType="NUMERIC" />
+    <result column="GOOD_ID" property="goodId" jdbcType="NUMERIC" />
+    <result column="ORD_AMT" property="ordAmt" jdbcType="NUMERIC" />
+    <result column="ETR_DATE" property="etrDate" jdbcType="TIMESTAMP" />
+    <result column="UPDATE_DATE" property="updateDate" jdbcType="TIMESTAMP" />
+    <result column="ERP_ORDER_ID" property="erpOrderId" jdbcType="NUMERIC" />
+    <result column="ERP_TRANS_DATE" property="erpTransDate" jdbcType="TIMESTAMP" />
+  </resultMap>
+
+  <sql id="Base_Column_List" >
+    ORD_ID, GOOD_ID, ORD_AMT, ETR_DATE, UPDATE_DATE, ERP_ORDER_ID, ERP_TRANS_DATE
+  </sql>
+
+  <select id="selectByPrimaryKey" resultMap="BaseResultMap" parameterType="java.lang.Long" >
+    select 
+    <include refid="Base_Column_List" />
+    from TB_TMP_ORDER
+    where ORD_ID = #{ordId,jdbcType=NUMERIC}
+  </select>
+      
+  <update id="updateByPrimaryKey" parameterType="org.nishkarma.mall.order.model.TbTmpOrder" >
+    update TB_TMP_ORDER
+    set 
+      ERP_ORDER_ID = #{erpOrderId,jdbcType=NUMERIC},
+      ERP_TRANS_DATE = now()
+    where ORD_ID = #{ordId,jdbcType=NUMERIC}
+  </update>
+</mapper>

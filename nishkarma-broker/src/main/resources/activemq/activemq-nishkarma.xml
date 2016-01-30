@@ -1,0 +1,65 @@
+<beans xmlns="http://www.springframework.org/schema/beans"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd
+  http://activemq.apache.org/schema/core http://activemq.apache.org/schema/core/activemq-core.xsd
+  http://camel.apache.org/schema/spring http://camel.apache.org/schema/spring/camel-spring.xsd">
+
+   	<bean
+		class="org.springframework.beans.factory.config.PropertyPlaceholderConfigurer">
+		<property name="locations">
+			<list>
+				<value>classpath:/activemq/credentials.properties</value>
+				<value>classpath:/activemq/${activemq-server-config}</value>
+			</list>
+		</property>
+	</bean>	
+	
+	<!-- The WebConsole is using JMX to retrieve data, useJmx="true" -->
+	<broker useJmx="true" brokerName="${activemq.brokerName}"
+		xmlns="http://activemq.apache.org/schema/core">
+
+		<!-- The managementContext is used to configure how ActiveMQ is exposed 
+			in JMX. By default, ActiveMQ uses the MBean server that is started by the 
+			JVM. For more information, see: http://activemq.apache.org/org.nishkarma.batch.jmx.html -->
+		<managementContext>
+			<managementContext createConnector="true"
+				connectorPort="${activemq.jmsport}" />
+		</managementContext>
+
+		<plugins>
+			<bean id="ipAuthenticationPlugin"
+				class="org.nishkarma.broker.common.util.IPAuthenticationPlugin"
+				xmlns="http://www.springframework.org/schema/beans">
+				<property name="allowedIPAddresses">
+					<list>
+						<value>127.0.0.1</value>
+					</list>
+				</property>
+			</bean>
+		</plugins>
+
+		<!-- http://activemq.apache.org/networks-of-brokers.html http://activemq.apache.org/multicast-transport-reference.html -->
+		<networkConnectors>
+			<networkConnector uri="multicast://224.1.2.3:6255?group=activemq"
+				dynamicOnly="true" networkTTL="3" prefetchSize="1"
+				decreaseNetworkConsumerPriority="true" />
+		</networkConnectors>
+
+
+		<!-- See more database locker options at http://activemq.apache.org/pluggable-storage-lockers.html 
+			producer, comsumer : -Ddurable=true -->
+		<!-- at first runn time, set createTablesOnStartup="true" to create tables -->
+
+		<persistenceAdapter>
+			<jdbcPersistenceAdapter dataSource="#dataSource-eai"
+				createTablesOnStartup="false" />
+		</persistenceAdapter>
+
+		<transportConnectors>
+			<transportConnector name="nio"
+				uri="${activemq.transportConnector-uri}" discoveryUri="multicast://224.1.2.3:6255?group=activemq" />
+		</transportConnectors>
+
+	</broker>
+
+</beans>

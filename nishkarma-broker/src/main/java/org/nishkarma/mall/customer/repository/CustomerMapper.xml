@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="org.nishkarma.mall.customer.repository.CustomerMapper" >
+  <resultMap id="BaseResultMap" type="org.nishkarma.mall.customer.model.Customer" >
+    <id column="ID" property="id" jdbcType="DECIMAL" />
+    <result column="VERSION" property="version" jdbcType="DECIMAL" />
+    <result column="NAME" property="name" jdbcType="VARCHAR" />
+    <result column="CREDIT" property="credit" jdbcType="DECIMAL" />
+  </resultMap>
+
+  <sql id="Base_Column_List" >
+    ID, VERSION, NAME, CREDIT
+  </sql>
+
+  <select id="getAllCustomerCreditIds" resultType="java.math.BigDecimal">
+    select ID from CUSTOMER
+  </select>
+
+  <select id="getAllCustomerCredits" resultMap="BaseResultMap">
+    select
+    <include refid="Base_Column_List" />
+    from CUSTOMER
+  </select>
+  	
+  <select id="getCustomerCreditById" resultMap="BaseResultMap" parameterType="java.math.BigDecimal" >
+    select 
+    <include refid="Base_Column_List" />
+    from CUSTOMER
+    where ID = #{id,jdbcType=DECIMAL}
+  </select>
+
+  <update id="updateCredit" parameterType="org.nishkarma.mall.customer.model.Customer" >
+    update CUSTOMER
+    set 
+      CREDIT = #{credit,jdbcType=DECIMAL}
+    where NAME = #{name,jdbcType=VARCHAR}
+  </update>
+</mapper>

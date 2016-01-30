@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:batch="http://www.springframework.org/schema/batch"
+	xsi:schemaLocation="
+		http://www.springframework.org/schema/batch	http://www.springframework.org/schema/batch/spring-batch.xsd
+		http://www.springframework.org/schema/beans	http://www.springframework.org/schema/beans/spring-beans.xsd">
+
+
+	<batch:job id="ioSampleJob" incrementer="uniqueJobParametersIncrementer">
+		<batch:step id="ioSampleJob-step1">
+			<batch:tasklet transaction-manager="transactionManager-mall">
+				<batch:chunk reader="itemReader-ioSampleJob" processor="itemProcessor-ioSampleJob"
+					writer="itemWriter-ioSampleJob" commit-interval="2" />
+			</batch:tasklet>
+		</batch:step>
+	</batch:job>
+
+	<bean id="fixedAmount" class="java.lang.Long">
+		<constructor-arg value="10" />
+	</bean>
+
+	<bean id="itemProcessor-ioSampleJob"
+		class="org.nishkarma.mall.customer.service.CustomerCreditIncreaseProcessor"
+		scope="step">
+		<property name="fixedAmount" value="#{jobParameters[paramFixedAmount]}" />
+	</bean>
+
+	<bean id="itemReader-ioSampleJob" class="org.mybatis.spring.batch.MyBatisPagingItemReader">
+		<property name="sqlSessionFactory" ref="sqlSessionFactory-mall" />
+		<property name="queryId" value="getAllCustomerCredits" />
+	</bean>
+
+	<bean id="itemWriter-ioSampleJob" class="org.mybatis.spring.batch.MyBatisBatchItemWriter">
+		<property name="sqlSessionFactory" ref="sqlSessionFactory-mall" />
+		<property name="statementId" value="updateCredit" />
+	</bean>
+
+</beans>

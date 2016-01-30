@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:batch="http://www.springframework.org/schema/batch"
+	xsi:schemaLocation="
+		http://www.springframework.org/schema/batch	http://www.springframework.org/schema/batch/spring-batch.xsd
+		http://www.springframework.org/schema/beans	http://www.springframework.org/schema/beans/spring-beans.xsd">
+
+
+	<batch:job id="orderErrorProcessJob" incrementer="uniqueJobParametersIncrementer">
+		<batch:step id="orderErrorProcessJob-step1">
+			<batch:tasklet transaction-manager="transactionManager-eai">
+				<batch:chunk reader="itemReader-orderErrorProcess"
+					processor="itemProcessor-orderErrorProcess" writer="itemWriter-orderErrorProcess"
+					commit-interval="2" />
+			</batch:tasklet>
+		</batch:step>
+	</batch:job>
+
+	<bean id="itemProcessor-orderErrorProcess"
+		class="org.nishkarma.broker.errorprocess.batch.processor.OrderErrorProcessItemProcessor"
+		scope="step">
+	</bean>
+
+	<bean id="itemReader-orderErrorProcess" class="org.mybatis.spring.batch.MyBatisPagingItemReader">
+		<property name="sqlSessionFactory" ref="sqlSessionFactory-eai" />
+		<property name="queryId" value="selectToProcess" />
+	</bean>
+
+	<bean id="itemWriter-orderErrorProcess" class="org.mybatis.spring.batch.MyBatisBatchItemWriter">
+		<property name="sqlSessionFactory" ref="sqlSessionFactory-eai" />
+		<property name="statementId" value="updateByPrimaryKeyTB_JMS_PROCESS_ERR_LOG" />
+	</bean>
+
+</beans>

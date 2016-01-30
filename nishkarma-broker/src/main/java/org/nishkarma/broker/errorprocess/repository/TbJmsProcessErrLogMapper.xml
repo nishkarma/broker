@@ -1,0 +1,102 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper
+	namespace="org.nishkarma.broker.errorprocess.repository.TbJmsProcessErrLogMapper">
+	<resultMap id="BaseResultMap"
+		type="org.nishkarma.broker.errorprocess.model.TbJmsProcessErrLog">
+		<id column="ERROR_LOG_ID" property="errorLogId" jdbcType="NUMERIC" />
+		<result column="QUEUE_NAME" property="queueName" jdbcType="VARCHAR" />
+		<result column="ERROR_STAGE" property="errorStage" jdbcType="NUMERIC" />
+		<result column="REL_ID" property="relId" jdbcType="NUMERIC" />
+		<result column="REL_SEQ" property="relSeq" jdbcType="NUMERIC" />
+		<result column="JMS_TYPE" property="jmsType" jdbcType="CHAR" />
+		<result column="STATUS" property="status" jdbcType="NUMERIC" />
+		<result column="ERROR_YN" property="errorYn" jdbcType="CHAR" />
+		<result column="RETRY_CNT" property="retryCnt" jdbcType="NUMERIC" />
+		<result column="ERROR_MESSAGE" property="errorMessage"
+			jdbcType="VARCHAR" />
+		<result column="ETR_DATE" property="etrDate" jdbcType="TIMESTAMP" />
+		<result column="UPDATE_DATE" property="updateDate" jdbcType="TIMESTAMP" />
+	</resultMap>
+
+	<sql id="Base_Column_List">
+		ERROR_LOG_ID, QUEUE_NAME, ERROR_STAGE, REL_ID, REL_SEQ,
+		JMS_TYPE, STATUS, ERROR_YN,
+		RETRY_CNT, ERROR_MESSAGE, ETR_DATE,
+		UPDATE_DATE
+	</sql>
+
+
+	<insert id="insert"
+		parameterType="org.nishkarma.broker.errorprocess.model.TbJmsProcessErrLog">
+
+		<selectKey keyProperty="errorLogId" resultType="long" order="BEFORE">
+			SELECT nextval('JMS_PROCESS_ERROR_LOG_SEQ')
+		</selectKey>
+
+		insert into TB_JMS_PROCESS_ERR_LOG (ERROR_LOG_ID, QUEUE_NAME,
+		ERROR_STAGE,
+		REL_ID, REL_SEQ, JMS_TYPE,
+		STATUS, ERROR_YN, RETRY_CNT,
+		ERROR_MESSAGE
+		)
+		values (#{errorLogId,jdbcType=NUMERIC},
+		#{queueName,jdbcType=VARCHAR},
+		#{errorStage,jdbcType=NUMERIC},
+		#{relId,jdbcType=NUMERIC}, #{relSeq,jdbcType=NUMERIC},
+		#{jmsType,jdbcType=CHAR},
+		#{status,jdbcType=NUMERIC},
+		#{errorYn,jdbcType=CHAR},
+		#{retryCnt,jdbcType=NUMERIC},
+		#{errorMessage,jdbcType=VARCHAR}
+		)
+	</insert>
+
+	<update id="updateByPrimaryKeyTB_JMS_PROCESS_ERR_LOG"
+		parameterType="org.nishkarma.broker.errorprocess.model.TbJmsProcessErrLog">
+		update TB_JMS_PROCESS_ERR_LOG
+		set
+		ERROR_STAGE =
+		#{errorStage,jdbcType=NUMERIC},
+		STATUS = #{status,jdbcType=NUMERIC},
+		ERROR_YN
+		= #{errorYn,jdbcType=CHAR},
+		RETRY_CNT = RETRY_CNT + 1,
+		ERROR_MESSAGE =
+		#{errorMessage,jdbcType=VARCHAR},
+		UPDATE_DATE = now()
+		where
+		ERROR_LOG_ID =
+		#{errorLogId,jdbcType=NUMERIC}
+	</update>
+
+	<update id="updateProcessStatus"
+		parameterType="org.nishkarma.broker.errorprocess.model.TbJmsProcessErrLog">
+		update TB_JMS_PROCESS_ERR_LOG
+		set
+		STATUS =
+		#{status,jdbcType=NUMERIC},
+		UPDATE_DATE = now()
+		where
+		ERROR_LOG_ID =
+		#{errorLogId,jdbcType=NUMERIC}
+	</update>
+
+	<select id="selectByPrimaryKey" parameterType="java.lang.Short"
+		resultMap="BaseResultMap">
+		select
+		<include refid="Base_Column_List" />
+		from TB_JMS_PROCESS_ERR_LOG
+		where ERROR_LOG_ID =
+		#{errorLogId,jdbcType=NUMERIC}
+	</select>
+
+	<select id="selectToProcess" resultMap="BaseResultMap">
+		select
+		<include refid="Base_Column_List" />
+		from TB_JMS_PROCESS_ERR_LOG
+		where status = 0
+		order by error_log_id
+	</select>
+
+</mapper>

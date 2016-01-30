@@ -1,0 +1,19 @@
+<beans xmlns="http://www.springframework.org/schema/beans"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd
+  http://activemq.apache.org/schema/core http://activemq.apache.org/schema/core/activemq-core.xsd
+  http://camel.apache.org/schema/spring http://camel.apache.org/schema/spring/camel-spring.xsd"
+  
+  profile="activemq"
+  
+  >
+ 
+	<bean id="broker" class="org.apache.activemq.xbean.BrokerFactoryBean">
+		<property name="config" value="classpath:/activemq/activemq-nishkarma.xml" />
+		<property name="start" value="true" />
+	</bean>
+
+	<!-- message consumer -->
+	<import resource="classpath:/activemq/jms-context-consumer.xml" />
+	
+</beans>

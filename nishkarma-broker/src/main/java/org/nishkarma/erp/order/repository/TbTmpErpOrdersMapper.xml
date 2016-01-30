@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="org.nishkarma.erp.order.repository.TbTmpErpOrdersMapper">
+	<resultMap id="BaseResultMap" type="org.nishkarma.erp.order.model.TbTmpErpOrders">
+		<id column="ORDER_ID" property="orderId" jdbcType="DECIMAL" />
+		<result column="CUSTOMER_ID" property="customerId" jdbcType="DECIMAL" />
+		<result column="ORDER_TOTAL" property="orderTotal" jdbcType="DECIMAL" />
+		<result column="ORDER_TIMESTAMP" property="orderTimestamp"
+			jdbcType="DATE" />
+		<result column="USER_ID" property="userId" jdbcType="DECIMAL" />
+		<result column="FRONT_ORDER_ID" property="frontOrderId"
+			jdbcType="DECIMAL" />
+	</resultMap>
+
+	<insert id="insert" parameterType="org.nishkarma.erp.order.model.TbTmpErpOrders">
+		<selectKey keyProperty="orderId" resultType="Integer" order="BEFORE">
+			SELECT nextval('TMP_ERP_ORDERS_SEQ')
+		</selectKey>
+
+		insert into TB_TMP_ERP_ORDERS (ORDER_ID, CUSTOMER_ID, ORDER_TOTAL,
+		ORDER_TIMESTAMP, USER_ID, FRONT_ORDER_ID
+		)
+		values (#{orderId,jdbcType=DECIMAL}, 0, #{orderTotal,jdbcType=DECIMAL},
+		#{orderTimestamp,jdbcType=DATE}, 0, #{frontOrderId,jdbcType=DECIMAL}
+		)
+	</insert>
+
+  <select id="selectErpOrderID" parameterType="java.lang.Integer" resultType="java.lang.Integer" >
+    select ORDER_ID from TB_TMP_ERP_ORDERS
+	where FRONT_ORDER_ID = #{frontOrderId,jdbcType=DECIMAL}
+  </select>
+  	
+</mapper>

@@ -1,0 +1,143 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- Repository and Service layers -->
+<beans xmlns="http://www.springframework.org/schema/beans"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:p="http://www.springframework.org/schema/p"
+	xmlns:context="http://www.springframework.org/schema/context" xmlns:tx="http://www.springframework.org/schema/tx"
+	xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd
+		http://www.springframework.org/schema/tx http://www.springframework.org/schema/tx/spring-tx.xsd
+		http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context.xsd">
+
+	<!-- ========================= RESOURCE DEFINITIONS ========================= -->
+
+	<import resource="tools-config.xml" />
+
+	<!-- import the dataSource definition -->
+	<import resource="datasource-config.xml" />
+
+	<!-- enable autowire -->
+	<context:annotation-config />
+
+	<context:component-scan base-package="org.nishkarma/**/service">
+		<context:include-filter type="annotation"
+			expression="org.springframework.stereotype.Service" />
+	</context:component-scan>
+
+	<!-- enables scanning for @Transactional annotations -->
+	<tx:annotation-driven />
+
+	<!-- transaction manager, use JtaTransactionManager for global tx -->
+	<bean id="transactionManager-erp"
+		class="org.springframework.jdbc.datasource.DataSourceTransactionManager"
+		lazy-init="true">
+		<property name="dataSource" ref="dataSource-erp" />
+	</bean>
+
+
+	<!-- define the SqlSessionFactory for ERP DB -->
+	<bean id="sqlSessionFactory-erp" class="org.mybatis.spring.SqlSessionFactoryBean">
+		<qualifier value="erpDB" />
+		<property name="dataSource" ref="dataSource-erp" />
+		<property name="configLocation" value="classpath:spring/mybatis-config-base.xml" />
+		<property name="mapperLocations"
+			value="classpath:org/nishkarma/erp/**/repository/*.xml" />
+	</bean>
+
+	<bean class="org.mybatis.spring.mapper.MapperScannerConfigurer">
+		<property name="sqlSessionFactory" ref="sqlSessionFactory-erp" />
+		<property name="basePackage" value="org.nishkarma.erp/**/repository" />
+	</bean>
+
+	<bean id="sqlSession-erp" class="org.mybatis.spring.SqlSessionTemplate"
+		destroy-method="clearCache">
+		<qualifier value="erpDB" />
+		<constructor-arg index="0" ref="sqlSessionFactory-erp" />
+	</bean>
+
+	<!-- define the TransactionManager for MALL DB -->
+	<bean id="transactionManager-mall"
+		class="org.springframework.jdbc.datasource.DataSourceTransactionManager"
+		lazy-init="true">
+		<property name="dataSource" ref="dataSource-mall" />
+	</bean>
+
+	<!-- define the SqlSessionFactory for MALL DB -->
+	<bean id="sqlSessionFactory-mall" class="org.mybatis.spring.SqlSessionFactoryBean">
+		<qualifier value="mallDB" />
+		<property name="dataSource" ref="dataSource-mall" />
+		<property name="configLocation" value="classpath:spring/mybatis-config-base.xml" />
+		<property name="mapperLocations"
+			value="classpath:org/nishkarma/mall/**/repository/*.xml" />
+	</bean>
+
+	<bean class="org.mybatis.spring.mapper.MapperScannerConfigurer">
+		<property name="sqlSessionFactory" ref="sqlSessionFactory-mall" />
+		<property name="basePackage" value="org.nishkarma.mall/**/repository" />
+	</bean>
+
+	<bean id="sqlSession-mall" class="org.mybatis.spring.SqlSessionTemplate"
+		destroy-method="clearCache">
+		<qualifier value="mallDB" />
+		<constructor-arg index="0" ref="sqlSessionFactory-mall" />
+	</bean>
+
+	<!-- define the TransactionManager for Activemq DB -->
+	<bean id="transactionManager-eai"
+		class="org.springframework.jdbc.datasource.DataSourceTransactionManager"
+		lazy-init="true">
+		<property name="dataSource" ref="dataSource-eai" />
+	</bean>
+
+	<!-- define the SqlSessionFactory for Activemq DB -->
+	<bean id="sqlSessionFactory-eai" class="org.mybatis.spring.SqlSessionFactoryBean">
+		<qualifier value="eaiDB" />
+		<property name="dataSource" ref="dataSource-eai" />
+		<property name="configLocation" value="classpath:spring/mybatis-config-base.xml" />
+		<property name="mapperLocations"
+			value="classpath:org/nishkarma/broker/**/repository/*.xml" />
+	</bean>
+
+	<bean class="org.mybatis.spring.mapper.MapperScannerConfigurer">
+		<property name="sqlSessionFactory" ref="sqlSessionFactory-eai" />
+		<property name="basePackage" value="org.nishkarma.broker/**/repository" />
+	</bean>
+
+
+	<bean id="sqlSession-eai" class="org.mybatis.spring.SqlSessionTemplate"
+		destroy-method="clearCache">
+		<qualifier value="eaiDB" />
+		<constructor-arg index="0" ref="sqlSessionFactory-eai" />
+	</bean>
+
+
+	<!-- - Message source for this context, loaded from localized "messages_xx" 
+		files. - Files are stored inside src/main/resources -->
+	<bean id="messageSource"
+		class="org.springframework.context.support.ReloadableResourceBundleMessageSource">
+		<property name="basenames">
+			<list>
+				<value>classpath:messages/messages</value>
+			</list>
+		</property>
+		<property name="useCodeAsDefaultMessage" value="true" />
+		<property name="defaultEncoding" value="UTF-8" />
+		<property name="cacheSeconds" value="0" />
+	</bean>
+
+	<bean id="defaultLocale" class="org.nishkarma.broker.common.util.DefaultLocale">
+		<property name="defaultLanguage" value="ko" />
+	</bean>
+
+
+
+	<!-- ActiveMQ Broker, message consumer -->
+	<import resource="classpath:/activemq/activemq-server.xml" />
+
+	<!-- Jetty -->
+	<import resource="classpath:/jetty/jetty-nishkarma.xml" />
+
+	<!-- Batch Job Launcher -->
+	<import resource="classpath:/batch/joblauncher-context.xml" />
+
+
+
+</beans>

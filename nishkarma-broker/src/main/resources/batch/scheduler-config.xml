@@ -1,0 +1,91 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- Repository and Service layers -->
+<beans xmlns="http://www.springframework.org/schema/beans"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:p="http://www.springframework.org/schema/p"
+	xmlns:context="http://www.springframework.org/schema/context" xmlns:tx="http://www.springframework.org/schema/tx"
+	xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd
+		http://www.springframework.org/schema/tx http://www.springframework.org/schema/tx/spring-tx.xsd
+		http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context.xsd">
+
+	<!-- ========================= SCHEDULER DEFINITIONS ========================= -->
+
+	<!-- ======= ioSampleJob ======= -->
+	<bean name="taskJobDetail-ioSampleJob"
+		class="org.springframework.scheduling.quartz.JobDetailFactoryBean">
+		<property name="jobClass"
+			value="org.nishkarma.batch.quartz.BatchQuartzJobLauncher" />
+		<property name="jobDataAsMap">
+			<map>
+				<entry key="jobName" value="ioSampleJob" />
+				<entry key="jobLocator" value-ref="jobRegistry" />
+				<entry key="jobLauncher" value-ref="jobLauncher" />
+				<entry key="jobExplorer" value-ref="jobExplorer" />
+				<entry key="jobParametersMap">
+					<map>
+						<entry key="paramFixedAmount" value-ref="fixedAmount" />
+					</map>
+				</entry>
+			</map>
+		</property>
+
+		<property name="durability" value="true" />
+	</bean>
+
+	<bean id="taskCronTrigger-ioSampleJob" class="org.nishkarma.batch.quartz.CronTriggerFactoryBean">
+		<constructor-arg index="0" value="taskJobDetail-ioSampleJob" />
+
+		<!-- http://quartz-scheduler.org/documentation/quartz-2.x/tutorials/crontrigger -->
+
+		<constructor-arg index="1" value="0/19 * * * * ?" />
+
+	</bean>
+	
+	<!-- ======= orderErrorProcessJob ======= -->
+	<bean name="taskJobDetail-orderErrorProcessJob"
+		class="org.springframework.scheduling.quartz.JobDetailFactoryBean">
+		<property name="jobClass"
+			value="org.nishkarma.batch.quartz.BatchQuartzJobLauncher" />
+		<property name="jobDataAsMap">
+			<map>
+				<entry key="jobName" value="orderErrorProcessJob" />
+				<entry key="jobLocator" value-ref="jobRegistry" />
+				<entry key="jobLauncher" value-ref="jobLauncher" />
+				<entry key="jobExplorer" value-ref="jobExplorer" />
+			</map>
+		</property>
+
+		<property name="durability" value="true" />
+	</bean>
+
+	<bean id="taskCronTrigger-orderErrorProcessJob" class="org.nishkarma.batch.quartz.CronTriggerFactoryBean">
+		<constructor-arg index="0" value="taskJobDetail-orderErrorProcessJob" />
+
+		<!-- http://quartz-scheduler.org/documentation/quartz-2.x/tutorials/crontrigger -->
+		<constructor-arg index="1" value="0/30 * * * * ?" />
+
+	</bean>	
+
+	<bean id="quartzSchedulerFactoryBean"
+		class="org.springframework.scheduling.quartz.SchedulerFactoryBean">
+		<property name="jobDetails">
+			<list>
+				<ref bean="taskJobDetail-ioSampleJob" />
+				<!-- <ref bean="taskJobDetail-orderErrorProcessJob" /> -->
+			</list>
+		</property>
+
+		<property name="triggers">
+			<list>
+				<ref bean="taskCronTrigger-ioSampleJob" />
+				<!-- <ref bean="taskCronTrigger-orderErrorProcessJob" /> -->
+			</list>
+		</property>
+
+		<property name="quartzProperties">
+			<props>
+				<prop key="org.quartz.jobStore.class">org.quartz.simpl.RAMJobStore</prop>
+			</props>
+		</property>
+	</bean>
+
+</beans>
