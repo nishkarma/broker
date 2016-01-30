@@ -1,6 +1,8 @@
 #Nishkarma EAI Framework
 This sample program intends to demonstrate EAI pattern with ApacheMQ, Spring Batch.
 
+You can see the overview this project in https://github.com/nishkarma/broker/blob/master/nishkarma-broker/docs/Nishkarma-EAI-Diagram.pdf
+
 ##Environments
 * Spring Framework (https://projects.spring.io/spring-framework/)
 * ActiveMQ (http://activemq.apache.org/)
