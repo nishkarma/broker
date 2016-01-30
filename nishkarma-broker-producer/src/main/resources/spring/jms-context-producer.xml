@@ -1,0 +1,52 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:jms="http://www.springframework.org/schema/jms"
+	xmlns:p="http://www.springframework.org/schema/p"
+	xsi:schemaLocation="
+    http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-4.0.xsd
+    http://www.springframework.org/schema/jms http://www.springframework.org/schema/jms/spring-jms-4.0.xsd">
+
+
+	<!-- =============================================== -->
+	<!-- JMS Common, Define JMS connectionFactory -->
+	<!-- =============================================== -->
+	<!-- Activemq connection factory -->
+	<bean id="amqConnectionFactory" class="org.apache.activemq.ActiveMQConnectionFactory">
+		<!-- brokerURL, You may have different IP or port -->
+		<constructor-arg index="0" value="failover:(nio://127.0.0.1:61616,nio://127.0.0.1:61618)?maxReconnectAttempts=5" />
+	</bean>
+
+	<!-- Pooled Spring connection factory -->
+	<bean id="connectionFactory"
+		class="org.springframework.jms.connection.CachingConnectionFactory">
+		<constructor-arg ref="amqConnectionFactory" />
+	</bean>
+
+	<!-- ======================================================= -->
+	<!-- JMS Send, define default destination and JmsTemplate -->
+	<!-- ======================================================= -->
+	<!-- Default Destination Queue Definition -->
+	<bean id="defaultDestination" class="org.apache.activemq.command.ActiveMQQueue">
+		<!-- name of the queue -->
+		<constructor-arg index="0" value="ORDER.QUEUE" />
+	</bean>
+
+	<!-- JmsTemplate Definition -->
+	<bean id="jmsTemplate" class="org.springframework.jms.core.JmsTemplate">
+		<property name="connectionFactory" ref="connectionFactory" />
+		<property name="defaultDestination" ref="defaultDestination" />
+		 <!-- Value = javax.jms.DeliveryMode.PERSISTENT
+			static final int NON_PERSISTENT = 1;
+			static final int PERSISTENT = 2;
+ 			-->		 
+		<property name="deliveryMode" value="2" />
+		<!-- Needs to be true for the deliveryMode to work -->
+		<property name="explicitQosEnabled" value="true" />
+	</bean>
+
+	<bean id="jmsOrderProducer" class="org.nishkarma.broker.jmsproducer.service.JmsOrderProducer">
+		<property name="jmsTemplate" ref="jmsTemplate" />
+		<property name="destinationName" value="ORDER.QUEUE" />
+	</bean>
+
+</beans>

@@ -1,0 +1,52 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper
+	namespace="org.nishkarma.broker.errorprocess.repository.TbJmsProcessErrLogMapper">
+	<resultMap id="BaseResultMap"
+		type="org.nishkarma.broker.errorprocess.model.TbJmsProcessErrLog">
+		<id column="ERROR_LOG_ID" property="errorLogId" jdbcType="NUMERIC" />
+		<result column="QUEUE_NAME" property="queueName" jdbcType="VARCHAR" />
+		<result column="ERROR_STAGE" property="errorStage" jdbcType="NUMERIC" />
+		<result column="REL_ID" property="relId" jdbcType="NUMERIC" />
+		<result column="REL_SEQ" property="relSeq" jdbcType="NUMERIC" />
+		<result column="JMS_TYPE" property="jmsType" jdbcType="CHAR" />
+		<result column="STATUS" property="status" jdbcType="NUMERIC" />
+		<result column="ERROR_YN" property="errorYn" jdbcType="CHAR" />
+		<result column="RETRY_CNT" property="retryCnt" jdbcType="NUMERIC" />
+		<result column="ERROR_MESSAGE" property="errorMessage"
+			jdbcType="VARCHAR" />
+		<result column="ETR_DATE" property="etrDate" jdbcType="TIMESTAMP" />
+		<result column="UPDATE_DATE" property="updateDate" jdbcType="TIMESTAMP" />
+	</resultMap>
+
+	<sql id="Base_Column_List">
+		ERROR_LOG_ID, QUEUE_NAME, ERROR_STAGE, REL_ID, REL_SEQ,
+		JMS_TYPE, STATUS, ERROR_YN,
+		RETRY_CNT, ERROR_MESSAGE, ETR_DATE,
+		UPDATE_DATE
+	</sql>
+
+	<insert id="insert"
+		parameterType="org.nishkarma.broker.errorprocess.model.TbJmsProcessErrLog">
+
+		<selectKey keyProperty="errorLogId" resultType="long"
+			order="BEFORE">
+			SELECT nextval('JMS_PROCESS_ERROR_LOG_SEQ')
+		</selectKey>
+
+		insert into TB_JMS_PROCESS_ERR_LOG (ERROR_LOG_ID, QUEUE_NAME,
+		ERROR_STAGE,
+		REL_ID, REL_SEQ, JMS_TYPE,
+		STATUS, ERROR_YN, RETRY_CNT,
+		ERROR_MESSAGE
+		)
+		values (#{errorLogId,jdbcType=NUMERIC}, #{queueName,jdbcType=VARCHAR},
+		#{errorStage,jdbcType=NUMERIC},
+		#{relId,jdbcType=NUMERIC}, #{relSeq,jdbcType=NUMERIC}, #{jmsType,jdbcType=CHAR},
+		#{status,jdbcType=NUMERIC}, #{errorYn,jdbcType=CHAR},
+		#{retryCnt,jdbcType=NUMERIC},
+		#{errorMessage,jdbcType=VARCHAR}
+		)
+	</insert>
+
+</mapper>
