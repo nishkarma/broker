@@ -53,7 +53,6 @@ After schema is created, set the batch.data.source.init=false.
 		
 ###Program Run
 
-mvn package
 
 * BatchServer
 ```
@@ -62,6 +61,7 @@ mvn package
 		with VM arguments
 			-DENVIRONMENT=postgresql -Dspring.profiles.active="batch"
 	run in command shell
+		mvn package ( to generate target's dependency-jars)
 		java -DENVIRONMENT=postgresql -Dspring.profiles.active="batch" -cp "./target/dependency-jars/*:./target/classes" org.nishkarma.batch.application.BatchServer
 ```
 
@@ -72,6 +72,7 @@ mvn package
 		with VM arguments
 			-DENVIRONMENT=postgresql -Dspring.profiles.active="activemq, jetty"
 	run in command shell
+		mvn package ( to generate target's dependency-jars)
 		java -DENVIRONMENT=postgresql -Dspring.profiles.active="activemq, jetty" -cp "./target/dependency-jars/*:./target/classes" org.nishkarma.broker.application.BrokerServer activemq-server1.properties
 		
 	when you need HA, run once more with parameter activemq-server2.properties like
