@@ -1,5 +1,5 @@
 # broker
-This sample program intends to demonstrate EAI pattern with ApacheMQ, Spring Batch.
+This sample program intends to demonstrate the EAI pattern with ApacheMQ, Spring Batch.
 
 You can see the overview this project in https://github.com/nishkarma/broker/blob/master/nishkarma-broker/docs/Nishkarma-EAI-Diagram.pdf
 
