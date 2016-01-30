@@ -77,14 +77,16 @@ mvn package
 ```		
 	
 ###how to monitor
+```
 1. webconsole
 	http://localhost:8161/
    
-	When you connect to http://localhost:8161/, jetty will ask you realms. insert admin / admin2 that is configured in /nishkarma-broker/webapps/WEB-INF/jetty-realm.properties.
+	When you connect to http://localhost:8161/, jetty will ask you realms. 
+	Insert admin / admin2 that is configured in /nishkarma-broker/webapps/WEB-INF/jetty-realm.properties.
 	If you login, you can see ApacheMQ webconsole link and Spring Batch Admin link.
 
 2. jconsole
 	remote
 	service:jmx:rmi:///jndi/rmi://127.0.0.1:1100/jmxrmi
-
+```
 	
