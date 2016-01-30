@@ -76,7 +76,7 @@ mvn package
 		java -DENVIRONMENT=postgresql -Dspring.profiles.active="activemq, jetty" -cp "./target/dependency-jars/*:./target/classes" org.nishkarma.broker.application.BrokerServer activemq-server2.properties
 ```		
 	
-###how to monitor
+###How to monitor
 ```
 1. webconsole
 	http://localhost:8161/
