@@ -37,17 +37,17 @@ db-script/sample data/
 mvn package
 
 * BatchServer
-
+```
     run in eclipse
 		org.nishkarma.batch.application.BatchServer
 		with VM arguments
 			-DENVIRONMENT=postgresql -Dspring.profiles.active="batch"
 	run in command shell
 		java -DENVIRONMENT=postgresql -Dspring.profiles.active="batch" -cp "./target/dependency-jars/*:./target/classes" org.nishkarma.batch.application.BatchServer
-
+```
 
 * BrokerServer
-
+```
 	run in eclipse
 		org.nishkarma.broker.application.BrokerServer
 		with VM arguments
@@ -57,7 +57,7 @@ mvn package
 		
 	when you need HA, run once more with parameter activemq-server2.properties like
 		java -DENVIRONMENT=postgresql -Dspring.profiles.active="activemq, jetty" -cp "./target/dependency-jars/*:./target/classes" org.nishkarma.broker.application.BrokerServer activemq-server2.properties
-		
+```		
 	
 ###how to monitor
 1. webconsole
